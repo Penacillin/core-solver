@@ -2,7 +2,7 @@ import sys
 import time
 from gc import get_referents
 from types import FunctionType, ModuleType
-from typing import Iterable, List, Set, Tuple
+from typing import List, Sequence, Set
 
 from ortools.linear_solver import pywraplp
 from ortools.sat.python import cp_model
@@ -13,11 +13,11 @@ worker_caps = [5, 5]
 task_costs = [1, 2, 2, 3, 2]
 num_workers = len(worker_caps)
 num_tasks = len(task_costs)
-allowed_workers: List[Set[int]] = [
+allowed_workers: List[Set[int] | Sequence[int]] = [
     {0, 1},
+    {0},
+    range(num_workers),
     {0, 1},
-    {0, 1},
-    {1},
     {0, 1},
 ]
 

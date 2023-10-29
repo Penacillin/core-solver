@@ -2,8 +2,9 @@ import copy
 import dataclasses
 import heapq
 from dataclasses import dataclass
-from typing import Iterable, List, Set, Tuple
+from typing import List, Sequence, Set, Tuple
 
+import numpy as np
 from ortools.sat.python import cp_model
 
 from .top_sort import top_sort
@@ -16,8 +17,8 @@ EdgeCon = Tuple[Vertex, float]
 @dataclass
 class SolveState:
     task_i: int
-    curr_places: List[int]
-    remaining_caps: List[int]
+    curr_places: np.ndarray
+    remaining_caps: np.ndarray
     # cp_model: cp_model.CpModel
 
 
@@ -69,7 +70,7 @@ class Solver:
         worker_caps: List[int],
         task_costs: List[int],
         edges_v: List[EdgeCon],
-        allowed_workers: List[Set[int]],
+        allowed_workers: List[Set[int] | Sequence[int]],
     ):
         self._worker_caps = worker_caps
         self._task_costs = task_costs
@@ -97,8 +98,8 @@ class Solver:
 
         pq: List[PqEntry] = []
 
-        cur_caps = self._worker_caps.copy()
-        cur_places = [-1] * len(t_sorted)
+        cur_caps = np.array(self._worker_caps.copy())
+        cur_places = np.array([-1] * len(t_sorted))
         # model_vars, cur_model = build_cpmodel(
         #     cur_caps, self._task_costs, self._allowed_workers
         # )
@@ -141,7 +142,7 @@ class Solver:
                 # # next_model.__model.CopyFrom(cur_state.cp_model.Proto())
                 # next_model.Add(model_vars[u_worker, u] == 1)
                 # next_status = self._cp_solver.Solve(next_model)
-                # if next_status != cp_model.OPTIMAL and next_status != cp_model.FEASIBLE:
+                # if next_status != cp_model.OPTIMAL
                 #     print("skipping unsolveable ", u, u_worker)
                 #     continue
 
