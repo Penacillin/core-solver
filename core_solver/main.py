@@ -1,12 +1,13 @@
-from typing import Iterable, List, Set, Tuple
-from types import ModuleType, FunctionType
-import time
-from .solver import Solver, EdgeCon
-from ortools.sat.python import cp_model
-from ortools.linear_solver import pywraplp
-from gc import get_referents
 import sys
+import time
+from gc import get_referents
+from types import FunctionType, ModuleType
+from typing import Iterable, List, Set, Tuple
 
+from ortools.linear_solver import pywraplp
+from ortools.sat.python import cp_model
+
+from .solver import EdgeCon, Solver
 
 worker_caps = [5, 5]
 task_costs = [1, 2, 2, 3, 2]

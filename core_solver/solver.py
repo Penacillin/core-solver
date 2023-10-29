@@ -1,10 +1,12 @@
-from typing import Iterable, List, Set, Tuple
+import copy
+import dataclasses
 import heapq
 from dataclasses import dataclass
-import dataclasses
+from typing import Iterable, List, Set, Tuple
+
 from ortools.sat.python import cp_model
+
 from .top_sort import top_sort
-import copy
 
 Vertex = int
 Edge = Tuple[Vertex, Vertex, float]
@@ -90,16 +92,16 @@ class Solver:
         return status == cp_model.OPTIMAL or status == cp_model.FEASIBLE
 
     def run(self):
-        t_sorted = top_sort(range(len(self._task_costs)), self._edges.copy())
+        t_sorted = top_sort(self._task_costs, self._edges.copy())
         print(t_sorted)
 
         pq: List[PqEntry] = []
 
         cur_caps = self._worker_caps.copy()
         cur_places = [-1] * len(t_sorted)
-        model_vars, cur_model = build_cpmodel(
-            cur_caps, self._task_costs, self._allowed_workers
-        )
+        # model_vars, cur_model = build_cpmodel(
+        #     cur_caps, self._task_costs, self._allowed_workers
+        # )
 
         state = SolveState(
             task_i=0,
@@ -111,14 +113,19 @@ class Solver:
         pq.append(PqEntry(0, state))
         heapq.heapify(pq)
 
+        searchspace = 0
+
         while pq:
             head_entry = heapq.heappop(pq)
             cur_cost = head_entry.cost
             cur_state = head_entry.state
 
-            print(f"cur cost={cur_cost}. cur_i={cur_state.task_i} qs={len(pq)}")
+            searchspace += 1
+
+            # print(f"cur cost={cur_cost}. cur_i={cur_state.task_i} qs={len(pq)}")
 
             if cur_state.task_i == len(t_sorted):
+                print(f"solved. space={searchspace}")
                 return cur_cost, cur_state.curr_places
 
             u = t_sorted[cur_state.task_i]
@@ -141,6 +148,7 @@ class Solver:
                 next_state = copy.deepcopy(cur_state)
                 # next_state.cp_model = next_model
                 next_state.task_i += 1
+                assert next_state.curr_places[u] == -1
                 next_state.curr_places[u] = u_worker
                 next_state.remaining_caps[u_worker] -= u_cost
 

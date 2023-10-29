@@ -9,6 +9,7 @@ readme = "README.md"
 python = ">=3.11,<3.13"
 ortools = "^9.7.2996"
 pandas = "^2.1.2"
+sortedcontainers = "^2.4.0"
 
 
 [tool.poetry.group.dev.dependencies]
