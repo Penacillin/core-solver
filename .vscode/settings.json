@@ -1,0 +1,7 @@
+{
+    "black-formatter.importStrategy": "fromEnvironment",
+    "flake8.importStrategy": "fromEnvironment",
+    "editor.rulers": [
+        88
+    ]
+}
