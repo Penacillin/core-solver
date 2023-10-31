@@ -1,12 +1,10 @@
-import sys
 import time
-from gc import get_referents
-from types import FunctionType, ModuleType
 from typing import List, Sequence, Set
 
 from ortools.linear_solver import pywraplp
 from ortools.sat.python import cp_model
 
+from .mem import getsize
 from .solver import EdgeCon, Solver
 
 worker_caps = [5, 5]
@@ -29,25 +27,6 @@ edges_v: List[EdgeCon] = [
     [(2, 2), (4, 1)],
     [(2, 10)],
 ]
-
-
-def getsize(obj):
-    BLACKLIST = type, ModuleType, FunctionType
-    """sum size of object & members."""
-    if isinstance(obj, BLACKLIST):
-        raise TypeError("getsize() does not take argument of type: " + str(type(obj)))
-    seen_ids = set()
-    size = 0
-    objects = [obj]
-    while objects:
-        need_referents = []
-        for obj in objects:
-            if not isinstance(obj, BLACKLIST) and id(obj) not in seen_ids:
-                seen_ids.add(id(obj))
-                size += sys.getsizeof(obj)
-                need_referents.append(obj)
-        objects = get_referents(*need_referents)
-    return size
 
 
 def test_mipmodel():

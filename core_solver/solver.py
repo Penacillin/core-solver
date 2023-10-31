@@ -100,6 +100,8 @@ class Solver:
 
         cur_caps = np.array(self._worker_caps.copy())
         cur_places = np.array([-1] * len(t_sorted))
+        assert cur_caps.dtype == np.int32
+        assert cur_places.dtype == np.int32
         # model_vars, cur_model = build_cpmodel(
         #     cur_caps, self._task_costs, self._allowed_workers
         # )
